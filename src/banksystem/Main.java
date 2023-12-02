@@ -1,17 +1,31 @@
 package banksystem;
 
-import banksystem.person.*;
 import banksystem.account.*;
+import banksystem.menu.*;
 
 import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-        //file processing occurs here and imports everything into the dynamic arrays
         ArrayList<Client> clients = new ArrayList<>();
         ArrayList<Employee> employees = new ArrayList<>();
-        ArrayList<SavingsAccount> savingsAccounts = new ArrayList<>();
+
+        /*FileProcessing fileProcessing = new FileProcessing();
+        fileProcessing.fromFileIntoArray(clients, employees);*/
+
+        clients.add(new Client("Muhammad", "Mounir", 201010068689L, "El-Khalafawi, Shoubra",
+                "da", "123", 50, "Active", 10000));
+
+        char[] grade = new char[]{'+','A'};
+        employees.add(new Employee("Mohamed", "Abdelnasser", 201032918180L, "High, far, wherever you are",
+                "ma", "456", 0, 'M', "Ain Shams Faculty of Computer & Information Science",
+                2026, grade, false));
+
+        LoginMenu loginMenu = new LoginMenu();
+        loginMenu.login(clients, employees);
 
 
+        /*fileProcessing.fromArrayIntoFile(clients, employees);
+        System.exit(0);*/
     }
 }
