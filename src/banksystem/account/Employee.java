@@ -1,14 +1,15 @@
 package banksystem.account;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Scanner;
 
 public class Employee extends Account {
     protected int employeeAccountID;
     protected char employeePosition;
     public String uniGraduated;
     public int yearOfGraduation;
-    protected char[] totalGrade;
+    protected char totalGradePart1;
+    protected char totalGradePart2;
     public static int employeeCount;
     private boolean adminAccess;
 
@@ -19,15 +20,15 @@ public class Employee extends Account {
     public Employee(String fName, String lName, long pNumber, String address,
                     String username, String password, int employeeAccountID,
                     char employeePosition, String uniGraduated,
-                    int yearOfGraduation, char[] totalGrade, boolean adminAccess) {
+                    int yearOfGraduation, char totalGradePart1, char totalGradePart2, boolean adminAccess) {
 
         super(fName, lName, pNumber, address, username, password);
         this.employeeAccountID = employeeAccountID;
         this.employeePosition = employeePosition;
         this.uniGraduated = uniGraduated;
         this.yearOfGraduation = yearOfGraduation;
-        this.totalGrade[0] = totalGrade[0];
-        this.totalGrade[1] = totalGrade[1];
+        this.totalGradePart1 = totalGradePart1;
+        this.totalGradePart2 = totalGradePart2;
         this.adminAccess = adminAccess;
         employeeCount++;
     }
@@ -38,7 +39,7 @@ public class Employee extends Account {
     }
 
     public void setEmployeeAccountID(int employeeAccountID) {
-        employeeAccountID = employeeAccountID;
+        this.employeeAccountID = employeeAccountID;
     }
 
     public char getEmployeePosition() {
@@ -46,7 +47,7 @@ public class Employee extends Account {
     }
 
     public void setEmployeePosition(char employeePosition) {
-        employeePosition = employeePosition;
+        this.employeePosition = employeePosition;
     }
 
     public boolean getAdminAccess() {
@@ -58,58 +59,282 @@ public class Employee extends Account {
     }
 
 
-    public void editClientAccount(Client client) {
+    public void editPersonalInfo() {
+        boolean repeat = true;
+        do {
+            System.out.print("\nSelect attribute to modify:\n" +
+                             "        1.Phone number\n" +
+                             "        2.Address\n" +
+                             "        3.Position\n" +
+                             "Selection:");
+            Scanner input = new Scanner(System.in);
+            int selection = input.nextInt();
 
-    }
+            switch (selection) {
+                case 1: {
+                    System.out.print("New phone number: ");
+                    this.phoneNumber = input.nextLong();
+                    System.out.println("Phone number edited successfully!");
+                    break;
+                }
+                case 2: {
+                    System.out.print("New address: ");
+                    this.address = input.nextLine();
+                    System.out.println("Address edited successfully!");
+                    break;
+                }
+                case 3: {
+                    System.out.print("New position: ");
+                    this.employeePosition = input.next().charAt(0);
+                    System.out.println("Position edited successfully!");
+                    break;
+                }
+                default: {
+                    System.out.println("Invalid selection!");
+                    continue;
+                }
+            }
 
-    public void deleteClientAccount(Client client) {
-        client = null;
-        Client.clientCount--;
+            System.out.println("Do you wish to modify another attribute? (y/n)");
+            char answer = input.next().charAt(0);
+            if (answer != 'y' && answer != 'Y')
+                repeat = false;
+
+        } while (repeat);
     }
 
     public void createClientAccount(ArrayList<Client> clients) {
-        // clients.add(Client.clientCount, new Client());
+        System.out.println(" --- CLIENT ACCOUNT CREATION --- \n" +
+                           "Input details of the new account:\n" +
+                           "---------------------------------\n");
+        Scanner input = new Scanner(System.in);
+
+        System.out.print("First name: ");
+        String firstName = input.nextLine();
+
+        System.out.print("Last name: ");
+        String lastName = input.nextLine();
+
+        System.out.print("Phone number: ");
+        long phoneNumber = input.nextLong();
+
+        System.out.print("Address: ");
+        String address = input.nextLine();
+
+        boolean isFound;
+
+        String username;
+        do {
+            isFound = false;
+
+            System.out.print("Username: ");
+            username = input.nextLine();
+
+            for (Client client : clients) {
+                if (username.equals("admin") || username.equals(client.getUsername())) {
+                    isFound = true;
+                    System.out.println("Error: Username already exists!");
+                    break;
+                }
+            }
+        } while (isFound);
+
+        String password;
+        do {
+            isFound = false;
+
+            System.out.print("Password: ");
+            password = input.nextLine();
+
+            if (password.equals("admin")) {
+                isFound = true;
+                System.out.println("Error: Forbidden password!");
+            }
+        } while (isFound);
+
+        int ID;
+        do {
+            isFound = false;
+
+            System.out.print("ID: ");
+            ID = input.nextInt();
+            for (Client client : clients) {
+                if (ID == client.getClientAccountID()) {
+                    isFound = true;
+                    System.out.println("Error: ID already exists!");
+                    break;
+                }
+            }
+        } while (isFound);
+
+        clients.add(new Client(firstName, lastName, phoneNumber, address,
+                username, password, ID, true, 0));
     }
 
-    public Client searchClientAccount(ArrayList<Client> clients, int ClientID) {
-        boolean found = false;
-        int index = 0;
-        for (int i = 0; i < clients.size(); i++) {
-            if (ClientID == clients.get(i).getClientAccountID()) {
-                found = true;
-                index = i;
-                break;
+    public void editClientAccount(Client client, ArrayList<Client> clients) {
+        boolean repeat = true;
+        do {
+            System.out.print("\nSelect attribute to modify:\n" +
+                             "        1.Firstname\n" +
+                             "        2.Lastname\n" +
+                             "        3.Phone number\n" +
+                             "        4.Address\n" +
+                             "        5.Username\n" +
+                             "        6.Password\n" +
+                             "        7.Account State\n" +
+                             "        8.Balance\n" +
+                             "Selection:");
+            Scanner input = new Scanner(System.in);
+            int selection = input.nextInt();
+
+            switch (selection) {
+                case 1: {
+                    System.out.print("New firstname: ");
+                    client.firstName = input.nextLine();
+                    System.out.println("Firstname modified successfully!");
+                    break;
+                }
+                case 2: {
+                    System.out.print("New lastname: ");
+                    client.lastName = input.nextLine();
+                    System.out.println("Lastname modified successfully!");
+                    break;
+                }
+                case 3: {
+                    System.out.print("New Phone number: ");
+                    client.phoneNumber = input.nextLong();
+                    System.out.println("Phone number modified successfully!");
+                    break;
+                }
+                case 4: {
+                    System.out.print("New address: ");
+                    client.address = input.nextLine();
+                    System.out.println("Address modified successfully!");
+                    break;
+                }
+                case 5: {
+                    boolean isFound;
+                    String username;
+
+                    do {
+                        isFound = false;
+                        System.out.print("New username: ");
+                        username = input.nextLine();
+
+                        for (Client tempClient : clients) {
+                            if (username.equals("admin") || username.equals(tempClient.getUsername())) {
+                                isFound = true;
+                                System.out.println("Error: Username already exists!");
+                                break;
+                            }
+                        }
+                    } while (isFound);
+
+                    client.username = username;
+                    System.out.println("Username modified successfully!");
+                    break;
+                }
+                case 6: {
+                    boolean isFound;
+                    String password;
+                    do {
+                        isFound = false;
+                        System.out.print("New password: ");
+                        password = input.nextLine();
+
+                        if (password.equals("admin")) {
+                            isFound = true;
+                            System.out.println("Error: Forbidden password!");
+                        }
+                    } while (isFound);
+
+                    client.setPassword(password);
+                    System.out.println("Password modified successfully!");
+                    break;
+                }
+                case 7: {
+                    System.out.print("New account state (T/F): ");
+                    char answer = input.next().charAt(0);
+
+                    if (answer == 't' || answer == 'T')
+                        client.setAccountState(true);
+                    else if (answer == 'f' || answer == 'F')
+                        client.setAccountState(false);
+
+                    System.out.println("Account state modified successfully!");
+                    break;
+                }
+                case 8: {
+                    System.out.print("New balance: ");
+                    client.balance = input.nextInt();
+                    System.out.println("Balance modified successfully!");
+                    break;
+                }
+                default: {
+                    System.out.println("Invalid selection!");
+                    continue;
+                }
             }
-        }
-        if (found)
-            return clients.get(index);
+
+            System.out.println("Do you wish to modify another attribute? (y/n)");
+            char answer = input.next().charAt(0);
+            if (answer != 'y' && answer != 'Y')
+                repeat = false;
+
+        } while (repeat);
+    }
+
+    public void deleteClientAccount(ArrayList<Client> clients, Client client) {
+        if (client == null)
+            System.out.println("Account deletion failed: Account doesn't exist!");
         else {
-            System.out.println("Account doesn't exist!");
-            return null;
+            clients.remove(client);
+            Client.clientCount--;
+            System.out.println("Account deletion successful!");
         }
     }
 
-    public Client searchClientAccount(ArrayList<Client> clients, String username) {
-        boolean found = false;
-        int index = 0;
-        for (int i = 0; i < Client.clientCount; i++) {
-            if (username.equals(clients.get(i).username)) {
-                found = true;
-                index = i;
-            } else {
-                System.out.println("Account doesn't exist!");
-            }
-        }
-        if (found)
-            return clients.get(index);
-        else
-            return null;
+    public void displayClientInformation(Client client) {
+        System.out.println("\nClient Information:\n" +
+                           "-------------------");
+        client.displayAccountDetails();
     }
 
+    public Client searchClientAccount(ArrayList<Client> clients) {
+        boolean invalid = true;
+        do {
+            System.out.print("\nSearch for the client by:\n" +
+                             "        1.Username" +
+                             "        2.ID" +
+                             "Selection: ");
+            Scanner input = new Scanner(System.in);
+            int selection = input.nextInt();
 
-    public void editPersonalInfo(Employee employee, int pNumber, String address, char EPosition) {
-        employee.phoneNumber = pNumber;
-        employee.address = address;
-        employee.employeePosition = EPosition;
+            if (selection == 1) {
+                invalid = false;
+
+                System.out.print("Username: ");
+                String clientUsername = input.nextLine();
+
+                for (Client client : clients) {
+                    if (clientUsername.equals(client.getUsername()))
+                        return client;
+                }
+            } else if (selection == 2) {
+                invalid = false;
+
+                System.out.print("ID: ");
+                int clientID = input.nextInt();
+
+                for (Client client : clients) {
+                    if (clientID == client.getClientAccountID())
+                        return client;
+                }
+            } else
+                System.out.println("Error: Invalid selection!");
+        } while (invalid);
+
+        System.out.println("Account doesn't exist!");
+        return null;
     }
 }

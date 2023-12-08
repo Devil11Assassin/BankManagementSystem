@@ -14,12 +14,12 @@ public class Main {
         fileProcessing.fromFileIntoArray(clients, employees);*/
 
         clients.add(new Client("Muhammad", "Mounir", 201010068689L, "El-Khalafawi, Shoubra",
-                "da", "123", 50, "Active", 10000));
+                "da", "123", 50, true, 10000));
 
-        char[] grade = new char[]{'+','A'};
+        /*char[] grade = new char[2]{'+','A'};
         employees.add(new Employee("Mohamed", "Abdelnasser", 201032918180L, "High, far, wherever you are",
                 "ma", "456", 0, 'M', "Ain Shams Faculty of Computer & Information Science",
-                2026, grade, false));
+                2026, grade, false));*/
 
         LoginMenu loginMenu = new LoginMenu();
         loginMenu.login(clients, employees);

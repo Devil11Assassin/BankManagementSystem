@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Client extends Account {
     private int clientAccountID;
-    private String accountState;
+    private boolean accountStateIsActive;
     public float balance;
     public static int clientCount;
 
@@ -15,16 +15,22 @@ public class Client extends Account {
 
     public Client(String fName, String lName, long pNumber, String address,
                   String username, String password,
-                  int clientAccountID, String accountState, float balance) {
+                  int clientAccountID, boolean accountState, float balance) {
         super(fName, lName, pNumber, address, username, password);
         this.clientAccountID = clientAccountID;
-        this.accountState = accountState;
+        this.accountStateIsActive = accountState;
         this.balance = balance;
         clientCount++;
     }
 
     public int getClientAccountID() {
         return clientAccountID;
+    }
+
+    public boolean getAccountStateIsActive() { return accountStateIsActive; }
+
+    public void setAccountState(boolean accountStateIsActive) {
+        this.accountStateIsActive = accountStateIsActive;
     }
 
     public void editPersonalInfo(Client client) {
@@ -61,8 +67,15 @@ public class Client extends Account {
         } while (redo == 'y' || redo == 'Y');
     }
 
-    public void displayAccountDetails(Client client) {
-        System.out.println(client.clientAccountID + client.balance + client.accountState);
+    public void displayAccountDetails() {
+        System.out.println("\nName: " + this.firstName + " " + this.lastName + "\n" +
+                           "Phone number: " + this.phoneNumber + "\n" +
+                           "Address: " + this.address + "\n\n" +
+                           "Username: " + this.getUsername() + "\n" +
+                           "Password: " + this.getPassword() + "\n" +
+                           "ID: " + this.getClientAccountID() + "\n" +
+                           "Account state: " + this.getAccountStateIsActive() + "\n" +
+                           "Balance: " + this.balance + "\n");
     }
 
     public void depositTransaction(Client client) {
@@ -97,10 +110,11 @@ public class Client extends Account {
         float transferAmount = input.nextFloat();
 
         Employee employee = new Employee();
-        if (employee.searchClientAccount(clients, clientID) != null) {
+        Client transferToClient = employee.searchClientAccount(clients);
+        if (transferToClient != null) {
             if (client.balance >= transferAmount) {
                 client.balance -= transferAmount;
-                employee.searchClientAccount(clients, clientID).balance += transferAmount;
+                transferToClient.balance += transferAmount;
             } else
                 System.out.println("Insufficient funds!");
             // if insufficient ask for permission to call the deposit function
