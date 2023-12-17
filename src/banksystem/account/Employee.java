@@ -5,12 +5,11 @@ import java.util.Scanner;
 
 public class Employee extends Account {
     protected int employeeAccountID;
-    protected char employeePosition;
     public String uniGraduated;
     public int yearOfGraduation;
     protected char totalGradePart1;
     protected char totalGradePart2;
-    public static int employeeCount;
+    protected char position;
     private boolean adminAccess;
 
     public Employee() {
@@ -19,18 +18,17 @@ public class Employee extends Account {
 
     public Employee(String fName, String lName, long pNumber, String address,
                     String username, String password, int employeeAccountID,
-                    char employeePosition, String uniGraduated,
-                    int yearOfGraduation, char totalGradePart1, char totalGradePart2, boolean adminAccess) {
+                    String uniGraduated, int yearOfGraduation, char totalGradePart1,
+                    char totalGradePart2, char position, boolean adminAccess) {
 
         super(fName, lName, pNumber, address, username, password);
         this.employeeAccountID = employeeAccountID;
-        this.employeePosition = employeePosition;
         this.uniGraduated = uniGraduated;
         this.yearOfGraduation = yearOfGraduation;
         this.totalGradePart1 = totalGradePart1;
         this.totalGradePart2 = totalGradePart2;
+        this.position = position;
         this.adminAccess = adminAccess;
-        employeeCount++;
     }
 
 
@@ -40,14 +38,6 @@ public class Employee extends Account {
 
     public void setEmployeeAccountID(int employeeAccountID) {
         this.employeeAccountID = employeeAccountID;
-    }
-
-    public char getEmployeePosition() {
-        return employeePosition;
-    }
-
-    public void setEmployeePosition(char employeePosition) {
-        this.employeePosition = employeePosition;
     }
 
     public boolean getAdminAccess() {
@@ -65,7 +55,6 @@ public class Employee extends Account {
             System.out.print("\nSelect attribute to modify:\n" +
                              "        1.Phone number\n" +
                              "        2.Address\n" +
-                             "        3.Position\n" +
                              "Selection:");
             Scanner input = new Scanner(System.in);
             int selection = input.nextInt();
@@ -83,12 +72,6 @@ public class Employee extends Account {
                     System.out.println("Address edited successfully!");
                     break;
                 }
-                case 3: {
-                    System.out.print("New position: ");
-                    this.employeePosition = input.next().charAt(0);
-                    System.out.println("Position edited successfully!");
-                    break;
-                }
                 default: {
                     System.out.println("Invalid selection!");
                     continue;
@@ -101,6 +84,26 @@ public class Employee extends Account {
                 repeat = false;
 
         } while (repeat);
+    }
+
+    public void displayEmployeeInformation(){
+        System.out.println("\nName: " + firstName + " " + lastName + "\n" +
+                           "Phone number: " + phoneNumber + "\n" +
+                           "Address: " + address + "\n\n" +
+                           "Graduated from " + uniGraduated + ", " + yearOfGraduation + " with " + totalGradePart1 + totalGradePart2 + " grade.\n" +
+                           "Username: " + getUsername() + "\n" +
+                           "Password: " + getPassword() + "\n" +
+                           "ID: " + employeeAccountID + "\n" +
+                           "Position: " + position + "\n" +
+                           "Admin access: " + adminAccess + "\n");
+    }
+
+    public void displayEmployeeIdentification(){
+        System.out.println("\nUsername: " + getUsername() + "\n" +
+                           "Password: " + getPassword() + "\n" +
+                           "ID: " + employeeAccountID + "\n" +
+                           "Position: " + position + "\n" +
+                           "Admin access: " + adminAccess + "\n");
     }
 
     public void createClientAccount(ArrayList<Client> clients) {
@@ -167,8 +170,28 @@ public class Employee extends Account {
             }
         } while (isFound);
 
+        boolean isValid;
+        char answer;
+        boolean isSavingsAccount = false;
+        do {
+            isValid = false;
+
+            System.out.print("Savings Account (Y/N): ");
+            answer = input.next().charAt(0);
+
+            if (answer == 'Y' || answer == 'y') {
+                isSavingsAccount = true;
+                isValid = true;
+            } else if (answer == 'N' || answer == 'n')
+                isValid = true;
+            else
+                System.out.println("Error: Invalid input!");
+        } while (!isValid);
+
+        input.close();
+
         clients.add(new Client(firstName, lastName, phoneNumber, address,
-                username, password, ID, true, 0));
+                username, password, ID, true, 0, isSavingsAccount));
     }
 
     public void editClientAccount(Client client, ArrayList<Client> clients) {
@@ -183,6 +206,7 @@ public class Employee extends Account {
                              "        6.Password\n" +
                              "        7.Account State\n" +
                              "        8.Balance\n" +
+                             "        9.Savings Account Status\n" +
                              "Selection:");
             Scanner input = new Scanner(System.in);
             int selection = input.nextInt();
@@ -270,6 +294,28 @@ public class Employee extends Account {
                     System.out.println("Balance modified successfully!");
                     break;
                 }
+                case 9: {
+                    boolean isValid;
+                    char answer;
+                    do {
+                        isValid = false;
+
+                        System.out.print("New 'Savings' status (Y/N): ");
+                        answer = input.next().charAt(0);
+                        if (answer == 'Y' || answer == 'y') {
+                            client.isSavingsAccount = true;
+                            isValid = true;
+                        } else if (answer == 'N' || answer == 'n') {
+                            client.isSavingsAccount = false;
+                            isValid = true;
+                        } else {
+                            System.out.println("Error: Invalid input!");
+                            continue;
+                        }
+                        System.out.println("'Savings Account' status modified successfully!");
+                    } while (!isValid);
+                    break;
+                }
                 default: {
                     System.out.println("Invalid selection!");
                     continue;
@@ -280,7 +326,7 @@ public class Employee extends Account {
             char answer = input.next().charAt(0);
             if (answer != 'y' && answer != 'Y')
                 repeat = false;
-
+            input.close();
         } while (repeat);
     }
 
@@ -289,7 +335,6 @@ public class Employee extends Account {
             System.out.println("Account deletion failed: Account doesn't exist!");
         else {
             clients.remove(client);
-            Client.clientCount--;
             System.out.println("Account deletion successful!");
         }
     }
@@ -304,8 +349,8 @@ public class Employee extends Account {
         boolean invalid = true;
         do {
             System.out.print("\nSearch for the client by:\n" +
-                             "        1.Username" +
-                             "        2.ID" +
+                             "        1.Username\n" +
+                             "        2.ID\n" +
                              "Selection: ");
             Scanner input = new Scanner(System.in);
             int selection = input.nextInt();
@@ -314,6 +359,7 @@ public class Employee extends Account {
                 invalid = false;
 
                 System.out.print("Username: ");
+                input.nextLine();
                 String clientUsername = input.nextLine();
 
                 for (Client client : clients) {

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class OptionsMenu {
-    public void optionsClient(Client client, ArrayList<Client> clients) {
+    public void optionsClient(Client client, ArrayList<Client> clients, ArrayList<PreviousTransaction> previousTransactions) {
         boolean performAnotherOperation = true;
         do {
             System.out.print("\n1.Transaction\n" +
@@ -28,17 +28,17 @@ public class OptionsMenu {
                 selection = input.nextInt();
 
                 if (selection == 1)
-                    client.depositTransaction(client);
+                    client.depositTransaction(client, previousTransactions);
                 else if (selection == 2)
-                    client.withdrawalTransaction(client);
+                    client.withdrawalTransaction(client, previousTransactions);
                 else if (selection == 3)
-                    client.transferTransaction(client, clients);
+                    client.transferTransaction(client, clients, previousTransactions);
                     //else if (selection == 4 && client.clientSavings == true){}
                     //  call loan function
                 else
                     System.out.println("Invalid selection!\n");
             } else if (selection == 2)
-                client.showTransactionHistory(client);
+                previousTransactions.getFirst().selectTransactionHistory(client, previousTransactions);
             else if (selection == 3)
                 client.displayAccountDetails();
             else if (selection == 4)
@@ -109,51 +109,41 @@ public class OptionsMenu {
         } while (performAnotherOperation);
     }
 
-    public void optionsAdmin(ArrayList<Client> clients, ArrayList<Employee> employees) {
+    public void optionsAdmin(ArrayList<Client> clients, ArrayList<Employee> employees, ArrayList<PreviousTransaction> previousTransactions) {
         Admin admin = new Admin();
 
         boolean performAnotherOperation = true;
         do {
-            System.out.print("1.Employee Accounts Management\n" +
+            System.out.print("\n1.Employee Accounts Management\n" +
                              "2.Display Transaction History\n" +
                              "3.Display Accounts\n" +
                              "\nSelection: ");
             Scanner input = new Scanner(System.in);
             int selection = input.nextInt();
 
+            boolean invalidSelection = true;
             if (selection == 1) {
-                //employee account registration
-                //employee account modification
-                //employee account deletion
-            } else if (selection == 2) {
-                boolean isInvalid = true;
                 do {
-                    System.out.print("\nType of Transaction:\n" +
-                                     "        1.Deposit\n" +
-                                     "        2.Withdrawal\n" +
-                                     "        3.Transfer\n" +
+                    System.out.print("\n1.Create new employee account\n" +
+                                     "2.Edit employee account\n" +
+                                     "3.Delete employee account\n" +
                                      "\nSelection: ");
-                    selection = input.nextInt();
 
-                    switch (selection) {
-                        case 1: {
-                            admin.displayDepositTransactions(admin.searchClientAccount(clients));
-                            isInvalid = false;
-                            break;
-                        }
-                        case 2: {
-                            admin.displayWithdrawalTransactions(admin.searchClientAccount(clients));
-                            isInvalid = false;
-                            break;
-                        }
-                        case 3: {
-                            admin.displayTransferTransactions(admin.searchClientAccount(clients));
-                            isInvalid = false;
-                            break;
-                        }
-                        default: System.out.println("Error: Invalid selection!");
-                    }
-                } while (isInvalid);
+                    selection = input.nextInt();
+                    if (selection == 1) {
+                        invalidSelection = false;
+                        admin.registerEmployeeAccount(employees);
+                    } else if (selection == 2) {
+                        invalidSelection = false;
+                        admin.editEmployeeAccount(admin.searchEmployeeAccount(employees), employees);
+                    } else if (selection == 3) {
+                        invalidSelection = false;
+                        admin.deleteEmployeeAccount(admin.searchEmployeeAccount(employees), employees);
+                    } else
+                        System.out.println("Error: Invalid selection!");
+                } while (invalidSelection);
+            } else if (selection == 2) {
+                admin.displayTransactions(clients, previousTransactions);
             } else if (selection == 3)
                 admin.displayAccounts(clients, employees);
             else {

@@ -7,20 +7,20 @@ public class Client extends Account {
     private int clientAccountID;
     private boolean accountStateIsActive;
     public float balance;
-    public static int clientCount;
+    public boolean isSavingsAccount;
 
     public Client() {
         super();
     }
 
     public Client(String fName, String lName, long pNumber, String address,
-                  String username, String password,
-                  int clientAccountID, boolean accountState, float balance) {
+                  String username, String password, int clientAccountID, boolean accountState,
+                  float balance, boolean isSavingsAccount) {
         super(fName, lName, pNumber, address, username, password);
         this.clientAccountID = clientAccountID;
         this.accountStateIsActive = accountState;
         this.balance = balance;
-        clientCount++;
+        this.isSavingsAccount = isSavingsAccount;
     }
 
     public int getClientAccountID() {
@@ -47,16 +47,19 @@ public class Client extends Account {
             int selection = input.nextInt();
 
             if (selection == 1) {
-                System.out.println("Enter your new firstname: ");
+                System.out.print("Enter your new firstname: ");
+                input.nextLine();
                 client.firstName = input.nextLine();
             } else if (selection == 2) {
-                System.out.println("Enter your new lastname: ");
+                System.out.print("Enter your new lastname: ");
+                input.nextLine();
                 client.lastName = input.nextLine();
             } else if (selection == 3) {
-                System.out.println("Enter your new phone number: ");
+                System.out.print("Enter your new phone number: ");
                 client.phoneNumber = input.nextLong();
             } else if (selection == 4) {
-                System.out.println("Enter your new address: ");
+                System.out.print("Enter your new address: ");
+                input.nextLine();
                 client.address = input.nextLine();
             } else {
                 System.out.println("Error: Invalid selection!");
@@ -68,26 +71,37 @@ public class Client extends Account {
     }
 
     public void displayAccountDetails() {
-        System.out.println("\nName: " + this.firstName + " " + this.lastName + "\n" +
-                           "Phone number: " + this.phoneNumber + "\n" +
-                           "Address: " + this.address + "\n\n" +
-                           "Username: " + this.getUsername() + "\n" +
-                           "Password: " + this.getPassword() + "\n" +
-                           "ID: " + this.getClientAccountID() + "\n" +
-                           "Account state: " + this.getAccountStateIsActive() + "\n" +
-                           "Balance: " + this.balance + "\n");
+        System.out.println("\nName: " + firstName + " " + lastName + "\n" +
+                           "Phone number: " + phoneNumber + "\n" +
+                           "Address: " + address + "\n\n" +
+                           "Username: " + getUsername() + "\n" +
+                           "Password: " + getPassword() + "\n" +
+                           "ID: " + getClientAccountID() + "\n" +
+                           "Account state: " + getAccountStateIsActive() + "\n" +
+                           "Balance: " + balance + "\n" +
+                           "Savings Account: " + isSavingsAccount + "\n");
     }
 
-    public void depositTransaction(Client client) {
+    public void displayAccountIdentification(){
+        System.out.println("Username: " + getUsername() + "\n" +
+                           "Password: " + getPassword() + "\n" +
+                           "ID: " + getClientAccountID() + "\n" +
+                           "Account state: " + getAccountStateIsActive() + "\n" +
+                           "Savings Account: " + isSavingsAccount + "\n");
+    }
+
+    public void depositTransaction(Client client,ArrayList <PreviousTransaction> transactionHistory) {
         System.out.println("Enter the amount you want to deposit: ");
         Scanner input = new Scanner(System.in);
         float DepositAmount = input.nextFloat();
         client.balance += DepositAmount;
 
         System.out.println("Deposited: " + DepositAmount + "\nNew balance: " + client.balance + "\n");
+        transactionHistory.add(new PreviousTransaction(clientAccountID, client.balance,
+                client.balance - DepositAmount,"Deposit"));
     }
 
-    public void withdrawalTransaction(Client client) {
+    public void withdrawalTransaction(Client client,ArrayList <PreviousTransaction> transactionHistory) {
         System.out.println("Enter the amount you want to withdraw: ");
         Scanner input = new Scanner(System.in);
         float withdrawalAmount = input.nextFloat();
@@ -95,11 +109,13 @@ public class Client extends Account {
         if (client.balance >= withdrawalAmount) {
             client.balance -= withdrawalAmount;
             System.out.println("Withdrew: " + withdrawalAmount + "\nNew balance: " + client.balance + "\n");
+            transactionHistory.add(new PreviousTransaction(clientAccountID, client.balance,
+                    client.balance + withdrawalAmount,"Withdrawal"));
         } else
             System.out.println("Error: Insufficient funds!");
     }
 
-    public void transferTransaction(Client client, ArrayList<Client> clients) {
+    public void transferTransaction(Client client, ArrayList<Client> clients,ArrayList <PreviousTransaction> transactionHistory) {
 
         Scanner input = new Scanner(System.in);
 
@@ -115,18 +131,14 @@ public class Client extends Account {
             if (client.balance >= transferAmount) {
                 client.balance -= transferAmount;
                 transferToClient.balance += transferAmount;
+                transactionHistory.add(new PreviousTransaction(clientAccountID, client.balance,
+                        client.balance + transferAmount,"transferWithdrawal"));
+                transactionHistory.add(new PreviousTransaction(transferToClient.clientAccountID, transferToClient.balance,
+                        transferToClient.balance - transferAmount,"transferDeposit"));
             } else
                 System.out.println("Insufficient funds!");
             // if insufficient ask for permission to call the deposit function
         } else
             System.out.println("Error: Client not found!");
-    }
-
-    public void showTransactionHistory(Client client) {
-        // IDEAS
-        // create a transaction history class contains date&time, balance diff
-        //client has a dynamic array of transaction history
-        //call file of transaction
-        //sout the result
     }
 }
