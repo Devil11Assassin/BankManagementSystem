@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class LoginMenu {
-    public void login(ArrayList<Client> clients, ArrayList<Employee> employees, ArrayList<PreviousTransaction> previousTransactions) {
+    public static void login(ArrayList<Client> clients, ArrayList<Employee> employees, ArrayList<PreviousTransaction> previousTransactions) {
         String username;
         String password;
         boolean loginSuccessful = false;
@@ -14,30 +14,31 @@ public class LoginMenu {
 
         Scanner input = new Scanner(System.in);
 
-        System.out.println("\t*** LOGIN ***\n\t=============\n");
+        System.out.println("\n\t=============\n\t*** LOGIN ***\n\t=============\n");
         do {
-            System.out.print("Enter your username: ");
+            System.out.print("Username: ");
             username = input.nextLine();
-            System.out.print("Enter your password: ");
+            System.out.print("Password: ");
             password = input.nextLine();
 
             if (username.equals("admin") && password.equals("admin")) {
-                loginSuccessful = true;
-                System.out.println("\n\t---LOGGED IN AS ADMIN---\n\t--- 2FA   INITIATION ---\n");
-                loginAdminVerification(optionsMenu, clients, employees, previousTransactions);
+                System.out.println("\n\t---LOGGED IN AS ADMIN---\n\t-----2FA INITIATION-----\n");
+                loginSuccessful = loginAdminVerification(optionsMenu, clients, employees, previousTransactions);
             } else {
                 for (Client client : clients) {
                     if (username.equals(client.getUsername()) && password.equals(client.getPassword())) {
                         loginSuccessful = true;
-                        System.out.println("\n\t---LOGGED IN AS CLIENT---\n");
+                        System.out.println("\n\t---LOGGED IN AS CLIENT---");
                         optionsMenu.optionsClient(client, clients, previousTransactions);
+                        break;
                     }
                 }
                 for (Employee employee : employees) {
                     if (username.equals(employee.getUsername()) && password.equals(employee.getPassword())) {
                         loginSuccessful = true;
-                        System.out.println("\n\t---LOGGED IN AS EMPLOYEE---\n");
+                        System.out.println("\n\t---LOGGED IN AS EMPLOYEE---");
                         optionsMenu.optionsEmployee(employee, clients);
+                        break;
                     }
                 }
             }
@@ -50,28 +51,30 @@ public class LoginMenu {
     }
 
 
-    public void loginAdminVerification(OptionsMenu optionsMenu, ArrayList<Client> clients, ArrayList<Employee> employees,
+    public static boolean loginAdminVerification(OptionsMenu optionsMenu, ArrayList<Client> clients, ArrayList<Employee> employees,
                                        ArrayList<PreviousTransaction> previousTransactions) {
 
         Scanner input = new Scanner(System.in);
-        boolean loginSuccessful = false;
+        boolean verified = false;
 
-        System.out.print("Username: ");
+        System.out.print("Employee username: ");
         String username = input.nextLine();
-        System.out.print("Password: ");
+        System.out.print("Employee password: ");
         String password = input.nextLine();
 
         for (Employee employee : employees) {
             if (username.equals(employee.getUsername()) && password.equals(employee.getPassword()) && employee.getAdminAccess()) {
-                loginSuccessful = true;
+                verified = true;
                 break;
             }
         }
-        if (loginSuccessful) {
-            System.out.println("\t---2FA SUCCESSFUL---\n\tWelcome back " + username + "!");
+        if (verified) {
+            System.out.println("\n\t-----2FA SUCCESSFUL-----");
             optionsMenu.optionsAdmin(clients, employees, previousTransactions);
+            return true;
         } else {
-            System.out.println("\t-----2FA FAILED-----\n\t---ABORTING LOGIN---\n");
+            System.out.println("\n\t------2FA FAILED------");
+            return false;
         }
     }
 }

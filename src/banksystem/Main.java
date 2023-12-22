@@ -1,37 +1,65 @@
 package banksystem;
 
 import banksystem.account.*;
-import banksystem.menu.*;
+import static banksystem.menu.LoginMenu.login;
 
+import java.io.*;
 import java.util.ArrayList;
 
 public class Main {
+    static File ClientFile = new File("clients.data");
+    static File EmpFile = new File("employees.data");
+    static File TransactionFile = new File("transactions.data");
+
+    public static ArrayList<Client> clients = new ArrayList<>();
+    public static ArrayList<Employee> employees = new ArrayList<>();
+    public static ArrayList<PreviousTransaction> previousTransactions = new ArrayList<>();
+
     public static void main(String[] args) {
-        ArrayList<Client> clients = new ArrayList<>();
-        ArrayList<Employee> employees = new ArrayList<>();
-        ArrayList<PreviousTransaction> previousTransactions = new ArrayList<>();
+        readFile();
 
-        /*FileProcessing fileProcessing = new FileProcessing();
-        fileProcessing.fromFileIntoArray(clients, employees);*/
+        login(clients, employees, previousTransactions);
 
-        clients.add(new Client("Muhammad", "Mounir", 201010068689L, "El-Khalafawi, Shoubra",
-                "da", "123", 50, true, 10000, true));
+        writeFile();
 
-        clients.add(new Client("Ismael", "IbnOmk", 201010068689L, "3nd Omk, Egypt",
-                "iio", "abc", 51, true, 20000, false));
+        System.exit(0);
+    }
 
-        employees.add(new Employee("Mohamed", "Abdelnasser", 201032918180L, "High, far, wherever you are",
-                "ma", "456", 0, "Ain Shams Faculty of Computer & Information Science",
-                2026, '+', 'A', 'M', true));
+    public static void readFile(){
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(ClientFile))) {
+            clients = (ArrayList<Client>) inputStream.readObject();
+        } catch (Exception e) {
+            System.out.println("Exception encountered in clients' input stream.");
+        }
 
-        employees.add(new Employee("Nigga", "IbnAbook", 20L, "Low, close, wherever you are",
-                "wa", "999", 1, "Ain Shams Faculty of Computer & Information Science",
-                2026, '-', 'D', 'E', false));
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(EmpFile))) {
+            employees = (ArrayList<Employee>) inputStream.readObject();
+        } catch (Exception e) {
+            System.out.println("Exception encountered in employees' input stream.");
+        }
 
-        LoginMenu loginMenu = new LoginMenu();
-        loginMenu.login(clients, employees, previousTransactions);
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(TransactionFile))) {
+            previousTransactions = (ArrayList<PreviousTransaction>) inputStream.readObject();
+        } catch (Exception e) {
+            System.out.println("Exception encountered in transactions' input stream.");
+        }
+    }
 
-        /*fileProcessing.fromArrayIntoFile(clients, employees);
-        System.exit(0);*/
+    public static void writeFile() {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(ClientFile))) {
+            outputStream.writeObject(clients);
+        } catch (Exception e) {
+            System.out.println("Exception encountered in clients' output stream.");
+        }
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(EmpFile))) {
+            outputStream.writeObject(employees);
+        } catch (Exception e) {
+            System.out.println("Exception encountered in employees' output stream.");
+        }
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(TransactionFile))) {
+            outputStream.writeObject(previousTransactions);
+        } catch (Exception e) {
+            System.out.println("Exception encountered in transactions' output stream.");
+        }
     }
 }

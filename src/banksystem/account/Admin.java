@@ -1,6 +1,7 @@
 package banksystem.account;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Admin extends Employee {
@@ -8,12 +9,21 @@ public class Admin extends Employee {
     public Employee searchEmployeeAccount(ArrayList<Employee> employees) {
         boolean invalid = true;
         do {
-            System.out.print("\nSearch for the employee by:\n" +
-                             "        1.Username\n" +
-                             "        2.ID\n" +
-                             "Selection: ");
+            System.out.print("\nSearch for the employee by:" +
+                             "\n        1.Username" +
+                             "\n        2.ID" +
+                             "\nSelect: ");
             Scanner input = new Scanner(System.in);
-            int selection = input.nextInt();
+            int selection;
+            do {
+                try {
+                    selection = input.nextInt();
+                    break;
+                } catch (InputMismatchException e) {
+                    System.out.print("\nError: Invalid input!\n Enter a number: ");
+                    input.nextLine();
+                }
+            } while (true);
 
             if (selection == 1) {
                 invalid = false;
@@ -30,7 +40,16 @@ public class Admin extends Employee {
                 invalid = false;
 
                 System.out.print("ID: ");
-                int clientID = input.nextInt();
+                int clientID;
+                do {
+                    try {
+                        clientID = input.nextInt();
+                        break;
+                    } catch (InputMismatchException e) {
+                        System.out.print("\nError: Invalid input!\n Enter a number: ");
+                        input.nextLine();
+                    }
+                } while (true);
 
                 for (Employee employee : employees) {
                     if (clientID == employee.getEmployeeAccountID())
@@ -56,8 +75,18 @@ public class Admin extends Employee {
         System.out.print("Last name: ");
         String lastName = input.nextLine();
 
+
         System.out.print("Phone number: ");
-        long phoneNumber = input.nextLong();
+        long phoneNumber;
+        do {
+            try {
+                phoneNumber = input.nextLong();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.print("\nError: Invalid input!\nEnter a number: ");
+                input.nextLine();
+            }
+        } while (true);
 
         System.out.print("Address: ");
         input.nextLine();
@@ -99,7 +128,16 @@ public class Admin extends Employee {
             isFound = false;
 
             System.out.print("ID: ");
-            ID = input.nextInt();
+            do {
+                try {
+                    ID = input.nextInt();
+                    break;
+                } catch (InputMismatchException e) {
+                    System.out.print("\nError: Invalid input!\nEnter a number: ");
+                    input.nextLine();
+                }
+            } while (true);
+
             for (Employee employee : employees) {
                 if (ID == employee.getEmployeeAccountID()) {
                     isFound = true;
@@ -114,11 +152,20 @@ public class Admin extends Employee {
         String uniGraduated = input.nextLine();
 
         System.out.print("Graduation year: ");
-        int yearOfGraduation = input.nextInt();
+        int graduationYear;
+        do {
+            try {
+                graduationYear = input.nextInt();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.print("\nError: Invalid input!\nEnter a number: ");
+                input.nextLine();
+            }
+        } while (true);
 
         System.out.print("Full Grade (+/ /-) (A/B/C/D): ");
-        char totalGradePart1 = input.next().charAt(0);
-        char totalGradePart2 = input.next().charAt(1);
+        input.nextLine();
+        String gradeString = input.nextLine();
 
         boolean validInput;
         char employeePosition = 'E';
@@ -133,7 +180,7 @@ public class Admin extends Employee {
             } else if (answer == 'E' || answer == 'e')
                 validInput = true;
             else
-                System.out.println("Invalid input: ");
+                System.out.println("Error: Invalid input! Enter (M/E) only!");
         } while (!validInput);
 
         boolean adminAccess = false;
@@ -148,32 +195,41 @@ public class Admin extends Employee {
             } else if (answer == 'n' || answer == 'N')
                 validInput = true;
             else
-                System.out.println("Invalid input: ");
+                System.out.println("Error: Invalid input! Enter (y/n) only!");
         } while (!validInput);
 
         employees.add(new Employee(firstName, lastName, phoneNumber, address,
-                username, password, ID, uniGraduated, yearOfGraduation, totalGradePart1,
-                totalGradePart2, employeePosition, adminAccess));
+                username, password, ID, uniGraduated, graduationYear, gradeString, employeePosition, adminAccess));
     }
 
     public void editEmployeeAccount(Employee employee, ArrayList<Employee> employees) {
         boolean repeat = true;
         do {
-            System.out.print("\nSelect attribute to modify:\n" +
-                             "        1.Firstname\n" +
-                             "        2.Lastname\n" +
-                             "        3.Phone number\n" +
-                             "        4.Address\n" +
-                             "        5.Username\n" +
-                             "        6.Password\n" +
-                             "        7.ID\n" +
-                             "        8.University Graduated\n" +
-                             "        9.Grade\n" +
-                             "       10.Position\n" +
-                             "       11.Admin permissions\n" +
-                             "Selection: ");
+            System.out.print("\nSelect attribute to modify:" +
+                             "\n        1.Firstname" +
+                             "\n        2.Lastname" +
+                             "\n        3.Phone number" +
+                             "\n        4.Address" +
+                             "\n        5.Username" +
+                             "\n        6.Password" +
+                             "\n        7.ID" +
+                             "\n        8.University Graduated" +
+                             "\n        9.Graduation Year" +
+                             "\n       10.Grade" +
+                             "\n       11.Position" +
+                             "\n       12.Admin permissions" +
+                             "\nSelect: ");
             Scanner input = new Scanner(System.in);
-            int selection = input.nextInt();
+            int selection;
+            do {
+                try {
+                    selection = input.nextInt();
+                    break;
+                } catch (InputMismatchException e) {
+                    System.out.print("\nError: Invalid input!\n Enter a number: ");
+                    input.nextLine();
+                }
+            } while (true);
             input.nextLine();
 
             switch (selection) {
@@ -191,7 +247,15 @@ public class Admin extends Employee {
                 }
                 case 3: {
                     System.out.print("New phone number: ");
-                    employee.phoneNumber = input.nextLong();
+                    do {
+                        try {
+                            employee.phoneNumber = input.nextLong();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.print("\nError: Invalid input!\n Enter a number: ");
+                            input.nextLine();
+                        }
+                    } while (true);
                     System.out.println("Phone number modified successfully!");
                     break;
                 }
@@ -248,7 +312,15 @@ public class Admin extends Employee {
                         isFound = false;
 
                         System.out.print("New employee ID: ");
-                        ID = input.nextInt();
+                        do {
+                            try {
+                                ID = input.nextInt();
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.print("\nError: Invalid input!\n Enter a number: ");
+                                input.nextLine();
+                            }
+                        } while (true);
 
                         for (Employee tempEmployee : employees) {
                             if (ID == tempEmployee.getEmployeeAccountID()) {
@@ -270,13 +342,29 @@ public class Admin extends Employee {
                     break;
                 }
                 case 9: {
-                    System.out.print("New grade: ");
-                    employee.totalGradePart1 = input.next().charAt(0);
-                    employee.totalGradePart2 = input.next().charAt(1);
-                    System.out.println("Grade modified successfully!");
+                    System.out.print("New graduation year: ");
+                    do {
+                        try {
+                            employee.yearOfGraduation = input.nextInt();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.print("\nError: Invalid input!\n Enter a number: ");
+                            input.nextLine();
+                        }
+                    } while (true);
+                    System.out.println("'Graduation Year' modified successfully!");
                     break;
                 }
                 case 10: {
+                    System.out.print("New grade: ");
+                    input.nextLine();
+                    String gradeString = input.nextLine();
+                    employee.grade[0]  = gradeString.charAt(0);;
+                    employee.grade[1] = gradeString.charAt(1);;
+                    System.out.println("Grade modified successfully!");
+                    break;
+                }
+                case 11: {
                     boolean isValid;
                     char position;
                     do {
@@ -298,7 +386,7 @@ public class Admin extends Employee {
                     } while (!isValid);
                     break;
                 }
-                case 11: {
+                case 12: {
                     if (employee.position != 'M' && !employee.getAdminAccess()) {
                         boolean isValid;
                         char position;
@@ -355,7 +443,7 @@ public class Admin extends Employee {
     public void displayAccounts(ArrayList<Client> clients, ArrayList<Employee> employees) {
         Scanner input = new Scanner(System.in);
 
-        System.out.println("Select which account type to display: (Client/Employee)");
+        System.out.print("Select which account type to display (Client/Employee): ");
         String answer = input.nextLine();
 
         if (answer.equals("client") || answer.equals("Client") || answer.equals("CLIENT")) {
@@ -363,7 +451,7 @@ public class Admin extends Employee {
                 client.displayAccountIdentification();
         } else if (answer.equals("employee") || answer.equals("Employee") || answer.equals("EMPLOYEE")) {
             for (Employee employee : employees) {
-                employee.displayEmployeeIdentification();
+                displayEmployeeInformation(employee);
             }
         } else
             System.out.println("Cannot display accounts. Error: Invalid account type!");
@@ -371,5 +459,14 @@ public class Admin extends Employee {
 
     public void displayTransactions(ArrayList<Client> clients, ArrayList<PreviousTransaction> previousTransactions) {
         previousTransactions.getFirst().selectTransactionHistory(this.searchClientAccount(clients), previousTransactions);
+    }
+
+    @Override
+    public void displayEmployeeInformation(Employee employee) {
+        System.out.println("\nUsername: " + employee.getUsername() +
+                           "\nPassword: " + employee.getPassword() +
+                           "\nID: " + employee.employeeAccountID +
+                           "\nPosition: " + employee.position +
+                           "\nAdmin access: " + employee.getAdminAccess());
     }
 }

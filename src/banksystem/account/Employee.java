@@ -1,13 +1,15 @@
 package banksystem.account;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Employee extends Account {
     protected int employeeAccountID;
     public String uniGraduated;
     public int yearOfGraduation;
-    protected char totalGradePart1;
+    protected char[] grade = new char[2];
     protected char totalGradePart2;
     protected char position;
     private boolean adminAccess;
@@ -18,15 +20,19 @@ public class Employee extends Account {
 
     public Employee(String fName, String lName, long pNumber, String address,
                     String username, String password, int employeeAccountID,
-                    String uniGraduated, int yearOfGraduation, char totalGradePart1,
-                    char totalGradePart2, char position, boolean adminAccess) {
+                    String uniGraduated, int yearOfGraduation, String grade, char position, boolean adminAccess) {
 
         super(fName, lName, pNumber, address, username, password);
         this.employeeAccountID = employeeAccountID;
         this.uniGraduated = uniGraduated;
         this.yearOfGraduation = yearOfGraduation;
-        this.totalGradePart1 = totalGradePart1;
-        this.totalGradePart2 = totalGradePart2;
+        if (grade.charAt(0) != '+' && grade.charAt(0) != '-') {
+            this.grade[0] = grade.charAt(0);
+            this.grade[1] = '';
+        } else {
+            this.grade[0] = grade.charAt(0);
+            this.grade[1] = grade.charAt(1);
+        }
         this.position = position;
         this.adminAccess = adminAccess;
     }
@@ -86,24 +92,16 @@ public class Employee extends Account {
         } while (repeat);
     }
 
-    public void displayEmployeeInformation(){
-        System.out.println("\nName: " + firstName + " " + lastName + "\n" +
-                           "Phone number: " + phoneNumber + "\n" +
-                           "Address: " + address + "\n\n" +
-                           "Graduated from " + uniGraduated + ", " + yearOfGraduation + " with " + totalGradePart1 + totalGradePart2 + " grade.\n" +
-                           "Username: " + getUsername() + "\n" +
-                           "Password: " + getPassword() + "\n" +
-                           "ID: " + employeeAccountID + "\n" +
-                           "Position: " + position + "\n" +
-                           "Admin access: " + adminAccess + "\n");
-    }
-
-    public void displayEmployeeIdentification(){
-        System.out.println("\nUsername: " + getUsername() + "\n" +
-                           "Password: " + getPassword() + "\n" +
-                           "ID: " + employeeAccountID + "\n" +
-                           "Position: " + position + "\n" +
-                           "Admin access: " + adminAccess + "\n");
+    public void displayEmployeeInformation(Employee employee) {
+        System.out.println("\nName: " + firstName + " " + lastName +
+                           "\nPhone number: " + phoneNumber +
+                           "\nAddress: " + address + "\n" +
+                           "\nGraduated from " + uniGraduated + ", " + yearOfGraduation + " with " + grade[0] + grade[1] + " grade." +
+                           "\nUsername: " + getUsername() +
+                           "\nPassword: " + getPassword() +
+                           "\nID: " + employeeAccountID +
+                           "\nPosition: " + position +
+                           "\nAdmin access: " + adminAccess + "\n");
     }
 
     public void createClientAccount(ArrayList<Client> clients) {
@@ -119,9 +117,19 @@ public class Employee extends Account {
         String lastName = input.nextLine();
 
         System.out.print("Phone number: ");
-        long phoneNumber = input.nextLong();
+        long phoneNumber;
+        do {
+            try {
+                phoneNumber = input.nextLong();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.print("\nError: Invalid input!\n Enter a number: ");
+                input.nextLine();
+            }
+        } while (true);
 
         System.out.print("Address: ");
+        input.nextLine();
         String address = input.nextLine();
 
         boolean isFound;
@@ -160,7 +168,15 @@ public class Employee extends Account {
             isFound = false;
 
             System.out.print("ID: ");
-            ID = input.nextInt();
+            do {
+                try {
+                    ID = input.nextInt();
+                    break;
+                } catch (InputMismatchException e) {
+                    System.out.print("\nError: Invalid input!\n Enter a number: ");
+                    input.nextLine();
+                }
+            } while (true);
             for (Client client : clients) {
                 if (ID == client.getClientAccountID()) {
                     isFound = true;
@@ -187,8 +203,6 @@ public class Employee extends Account {
             else
                 System.out.println("Error: Invalid input!");
         } while (!isValid);
-
-        input.close();
 
         clients.add(new Client(firstName, lastName, phoneNumber, address,
                 username, password, ID, true, 0, isSavingsAccount));
@@ -226,7 +240,16 @@ public class Employee extends Account {
                 }
                 case 3: {
                     System.out.print("New Phone number: ");
-                    client.phoneNumber = input.nextLong();
+                    do {
+                        try {
+                            client.phoneNumber = input.nextLong();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.print("\nError: Invalid input!\n Enter a number: ");
+                            input.nextLine();
+                        }
+                    } while (true);
+                    input.nextLine();
                     System.out.println("Phone number modified successfully!");
                     break;
                 }
@@ -290,7 +313,15 @@ public class Employee extends Account {
                 }
                 case 8: {
                     System.out.print("New balance: ");
-                    client.balance = input.nextInt();
+                    do {
+                        try {
+                            client.balance = input.nextInt();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.print("\nError: Invalid input!\n Enter a number: ");
+                            input.nextLine();
+                        }
+                    } while (true);
                     System.out.println("Balance modified successfully!");
                     break;
                 }
@@ -340,8 +371,8 @@ public class Employee extends Account {
     }
 
     public void displayClientInformation(Client client) {
-        System.out.println("\nClient Information:\n" +
-                           "-------------------");
+        System.out.println("\nClient Information" +
+                           "\n------------------");
         client.displayAccountDetails();
     }
 
@@ -353,7 +384,16 @@ public class Employee extends Account {
                              "        2.ID\n" +
                              "Selection: ");
             Scanner input = new Scanner(System.in);
-            int selection = input.nextInt();
+            int selection;
+            do {
+                try {
+                    selection = input.nextInt();
+                    break;
+                } catch (InputMismatchException e) {
+                    System.out.print("\nError: Invalid input!\n Enter a number: ");
+                    input.nextLine();
+                }
+            } while (true);
 
             if (selection == 1) {
                 invalid = false;
@@ -370,7 +410,16 @@ public class Employee extends Account {
                 invalid = false;
 
                 System.out.print("ID: ");
-                int clientID = input.nextInt();
+                int clientID;
+                do {
+                    try {
+                        clientID = input.nextInt();
+                        break;
+                    } catch (InputMismatchException e) {
+                        System.out.print("\nError: Invalid input!\n Enter a number: ");
+                        input.nextLine();
+                    }
+                } while (true);
 
                 for (Client client : clients) {
                     if (clientID == client.getClientAccountID())
