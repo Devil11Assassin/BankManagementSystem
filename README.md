@@ -2,13 +2,13 @@ Bank Management System
 ======================
 Features
 --------
-- Low-Scale Bank System with basic functionalities
+- Low-Scale Bank System with Basic Functionalities
 - Bank Client Functionalities:
 
   - Deposit
   - Withdrawal
   - Transferal
-- Client Accounts Management Functionalities
+- Client Accounts Management Functionalities:
 
   - Creation
   - Modification
