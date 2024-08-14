@@ -1,12 +1,14 @@
 package banksystem.menu;
 
+import banksystem.Main;
 import banksystem.account.*;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class LoginMenu {
-    public static void login(ArrayList<Client> clients, ArrayList<Employee> employees, ArrayList<PreviousTransaction> previousTransactions) {
+
+    public static void login() {
         String username;
         String password;
         boolean loginSuccessful = false;
@@ -14,31 +16,37 @@ public class LoginMenu {
 
         Scanner input = new Scanner(System.in);
 
-        System.out.println("\n\t=============\n\t*** LOGIN ***\n\t=============\n");
+        System.out.println("\n\t  =============\n\t  *** LOGIN ***" +
+                           "\n\t  =============\nTYPE 'EXIT' TO CLOSE & SAVE" +
+                           "\n---------------------------\n");
         do {
             System.out.print("Username: ");
             username = input.nextLine();
+            if (username.equals("exit") || username.equals("EXIT") || username.equals("Exit"))
+                break;
             System.out.print("Password: ");
             password = input.nextLine();
 
             if (username.equals("admin") && password.equals("admin")) {
                 System.out.println("\n\t---LOGGED IN AS ADMIN---\n\t-----2FA INITIATION-----\n");
-                loginSuccessful = loginAdminVerification(optionsMenu, clients, employees, previousTransactions);
+                loginSuccessful = loginAdminVerification(optionsMenu, Main.clients, Main.employees, Main.previousTransactions);
             } else {
-                for (Client client : clients) {
+                for (Client client : Main.clients) {
                     if (username.equals(client.getUsername()) && password.equals(client.getPassword())) {
                         loginSuccessful = true;
                         System.out.println("\n\t---LOGGED IN AS CLIENT---");
-                        optionsMenu.optionsClient(client, clients, previousTransactions);
+                        optionsMenu.optionsClient(client, Main.clients, Main.previousTransactions);
                         break;
                     }
                 }
-                for (Employee employee : employees) {
-                    if (username.equals(employee.getUsername()) && password.equals(employee.getPassword())) {
-                        loginSuccessful = true;
-                        System.out.println("\n\t---LOGGED IN AS EMPLOYEE---");
-                        optionsMenu.optionsEmployee(employee, clients);
-                        break;
+                if (!loginSuccessful) {
+                    for (Employee employee : Main.employees) {
+                        if (username.equals(employee.getUsername()) && password.equals(employee.getPassword())) {
+                            loginSuccessful = true;
+                            System.out.println("\n\t---LOGGED IN AS EMPLOYEE---");
+                            optionsMenu.optionsEmployee(employee, Main.clients);
+                            break;
+                        }
                     }
                 }
             }
@@ -52,7 +60,7 @@ public class LoginMenu {
 
 
     public static boolean loginAdminVerification(OptionsMenu optionsMenu, ArrayList<Client> clients, ArrayList<Employee> employees,
-                                       ArrayList<PreviousTransaction> previousTransactions) {
+                                                 ArrayList<PreviousTransaction> previousTransactions) {
 
         Scanner input = new Scanner(System.in);
         boolean verified = false;

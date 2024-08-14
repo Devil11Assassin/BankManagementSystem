@@ -1,5 +1,7 @@
 package banksystem.account;
 
+import banksystem.Main;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -7,20 +9,29 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
+
 
 public class PreviousTransaction implements Serializable {
-    int clientID;
-    LocalDateTime dateAndTime;
-    float afterTransaction, beforeTransaction;
-    String transactionType;
+    public enum Type {
+        DEPOSIT,
+        WITHDRAWAL,
+        TRANSFER_DEPOSIT,
+        TRANSFER_WITHDRAWAL,
+        ALL,
+    }
 
-    public PreviousTransaction(int clientID, float afterTransaction, float beforeTransaction, String transactionType) {
+    public int clientID;
+    public LocalDateTime dateAndTime;
+    public float afterTransaction, beforeTransaction;
+    public Type type;
+
+    public PreviousTransaction() {}
+    public PreviousTransaction(int clientID, float afterTransaction, float beforeTransaction, Type type) {
         this.clientID = clientID;
         this.dateAndTime = LocalDateTime.now();
         this.afterTransaction = afterTransaction;
         this.beforeTransaction = beforeTransaction;
-        this.transactionType = transactionType;
+        this.type = type;
     }
 
     public void selectTransactionHistory(Client client, ArrayList<PreviousTransaction> previousTransactions) {
@@ -47,15 +58,15 @@ public class PreviousTransaction implements Serializable {
             } while (true);
 
             if (selection == 1)
-                this.showTransactionHistory(client.getClientAccountID(), previousTransactions, "Deposit");
+                showTransactionHistory(client.getAccountID(), Type.DEPOSIT);
             else if (selection == 2)
-                this.showTransactionHistory(client.getClientAccountID(), previousTransactions, "Withdrawal");
+                showTransactionHistory(client.getAccountID(), Type.WITHDRAWAL);
             else if (selection == 3)
-                this.showTransactionHistory(client.getClientAccountID(), previousTransactions, "transferDeposit");
+                showTransactionHistory(client.getAccountID(), Type.TRANSFER_DEPOSIT);
             else if (selection == 4)
-                this.showTransactionHistory(client.getClientAccountID(), previousTransactions, "transferWithdrawal");
+                showTransactionHistory(client.getAccountID(), Type.TRANSFER_WITHDRAWAL);
             else if (selection == 5)
-                this.showTransactionHistory(client.getClientAccountID(), previousTransactions, "All");
+                showTransactionHistory(client.getAccountID(), Type.ALL);
             else {
                 System.out.println("Error: Invalid selection.");
                 continue;
@@ -76,21 +87,21 @@ public class PreviousTransaction implements Serializable {
         } while (performAnotherOperation);
     }
 
-    public void showTransactionHistory(int ID, ArrayList<PreviousTransaction> previousTransactions, String transactionType) {
+    public static void showTransactionHistory(int ID, Type type) {
         boolean found = false;
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss");
 
-        for (PreviousTransaction previousTransaction : previousTransactions) {
-            if (transactionType.equals("All")) {
+        for (PreviousTransaction previousTransaction : Main.previousTransactions) {
+            if (type.equals(Type.ALL)) {
                 if (ID == previousTransaction.clientID) {
                     found = true;
                     System.out.println("\nTransaction Date&Time: " + previousTransaction.dateAndTime.format(format) +
                                        "\nBalance before transaction: " + previousTransaction.beforeTransaction +
                                        "\nBalance after transaction: " + previousTransaction.afterTransaction +
-                                       "\nTransaction type: " + previousTransaction.transactionType);
+                                       "\nTransaction type: " + previousTransaction.type);
                 }
             } else {
-                if (ID == previousTransaction.clientID && transactionType.equals(previousTransaction.transactionType)) {
+                if (ID == previousTransaction.clientID && type.equals(previousTransaction.type)) {
                     found = true;
                     System.out.println("\nTransaction Date&Time: " + previousTransaction.dateAndTime.format(format) +
                                        "\nBalance before transaction: " + previousTransaction.beforeTransaction +

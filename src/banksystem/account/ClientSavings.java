@@ -17,10 +17,11 @@ public class ClientSavings {
         System.out.println("\nInterest rate: " + interestRate * 100 + "%");
     }
 
-    public void savingsAccountDetails(float balance) {
+    public void savingsAccountDetails(float balance, Client client) {
 
         boolean performAnotherOperation = true;
         do {
+            balance = client.balance;
             System.out.print("\n1.Display interest rate" +
                              "\n2.Evaluate balance" +
                              "\nSelect: ");
@@ -42,7 +43,7 @@ public class ClientSavings {
                 System.out.print("Enter the year: ");
                 int years = input.nextInt() - 2023;
                 for (int i = 0; i < years; i++)
-                    balance += balance * interestRate * years;
+                    balance += balance * interestRate;
                 System.out.println("Balance after " + years + " years: " + balance);
             } else {
                 System.out.println("Invalid selection!");
